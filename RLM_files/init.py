@@ -259,13 +259,19 @@ def log2ckpt(end, freq):
     return checkpoints
 
 
-def init_loglinckpt(step, end, freq):
+def init_loglinckpt(step, end, freq, max_checkpoint_step=1024):
     """
     Initialize checkpoint iterator.
 
     Returns:
         Two iterators, one for linear and one for logscale. The iterators coincide up to some multiple of step, 
         then one proceeds linearly in multiples of step and the other logarithmically in factors of 2**(1/freq).
+        
+    Args:
+        step: Base step size
+        end: Maximum number of iterations
+        freq: Frequency parameter for log spacing
+        max_checkpoint_step: Maximum step value for checkpoints (default: 1024)
     """
     # find the correct multiplier
     factor = 2**(1./freq)
@@ -282,11 +288,18 @@ def init_loglinckpt(step, end, freq):
         current += step
     lin_ckpts.append(0)
 
-    # fill the log list by multiplying factors until end
+    # fill the log list by multiplying factors until max_checkpoint_step
     current = multiplier*factor
-    while round(current)*step < end:
+    while round(current)*step < end and round(current)*step <= max_checkpoint_step:
         log_ckpts.append(round(current)*step)
         current *= factor
+
+    # After reaching max_checkpoint_step, continue linearly with that step size
+    if log_ckpts[-1] < end:
+        current = log_ckpts[-1] + max_checkpoint_step
+        while current < end:
+            log_ckpts.append(current)
+            current += max_checkpoint_step
 
     log_ckpts.append(round(end))
     log_ckpts.append(0)

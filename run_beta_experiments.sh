@@ -5,21 +5,21 @@ device=cpu
 
 # RLM parameters (fixed)
 dataset=rlm
-num_features=128       # Vocabulary size
+num_features=32       # Vocabulary size
 num_layers=1          # Tree depth (generates 2^L leaves)
 num_tokens=$((2**num_layers))  # Sequence length (automatically calculated)
 
 # Beta values to test
-beta_values=(0.6 0.8 1.2 1.8 2.4 3.0)
+beta_values=(0.8 1.2 1.8 2.4)
 
 # Number of repetitions per beta
 num_repetitions=8
 
 # Training parameters (fixed)
-train_size=$((2**15))
+train_size=$((2**8))
 batch_size=64
 accumulation=1
-test_size=$((2**12))
+test_size=$((2**8))
 input_format=long
 whitening=0
 
@@ -43,7 +43,7 @@ decay_time=$((2**18))
 
 # Training control 
 max_epochs=1
-max_iters=5000
+max_iters=25000
 print_freq=1024
 save_freq=2
 measure_train=FALSE

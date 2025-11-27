@@ -159,12 +159,9 @@ class RLM:
             generator=self.generator,
         )
 
-        # Get full sequence of leaves
-        full_sequence = trees[L]  # shape: (batch_size, 2^L)
+
+        full_sequence = trees[L]  
         
-        # For next-token prediction:
-        # inputs: all tokens except last
-        # targets: only the last token
         inputs = full_sequence[:, :-1]
         targets = full_sequence[:, -1]
 
